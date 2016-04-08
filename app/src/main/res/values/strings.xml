@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Великие импрессионисты</string>
+    <string name="action_favorite">Favorite</string>
+    <string name="title_activity_display_message">Вот и оно</string>
+    <string name="action_search">Search</string>
+    <string name="hello_world">Hello World</string>
+
+    <string name="menu_settings">Settings</string>
+    <string name="dummy_section_text">Здесь будут избранные картины.</string>
+    <string name="favorites">Favorites</string>
+
+</resources>

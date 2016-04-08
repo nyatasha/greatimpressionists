@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="color1">#ff000000</color>
+    <color name="color2">#ff297f83</color>
+    <color name="color3">#e62117</color>
+    <color name="fon">#fff9fccf</color>
+    <color name="tabsScrollColor">#8a140e</color>
+
+</resources>
