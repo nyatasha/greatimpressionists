@@ -8,7 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-public class FullImageActivity extends Activity {
+public class FullImageActivityMagritt extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -21,9 +21,10 @@ public class FullImageActivity extends Activity {
 
         // get intent data
         Intent i = getIntent();
-        int positionD = i.getExtras().getInt("Dali");
-        ImageAdapter ImageAdapter = new ImageAdapter(this);
-        ImageView imageViewD = (ImageView) findViewById(R.id.full_image_view);
-        imageViewD.setImageResource(ImageAdapter.mThumbIds[positionD]);
+        int positionM = i.getExtras().getInt("Magritt");
+        ImageAdapterMagritt ImageAdapterMagritt = new ImageAdapterMagritt(this);
+        ImageView imageViewM = (ImageView) findViewById(R.id.full_image_view);
+        imageViewM.setImageResource(ImageAdapterMagritt.mThumbIds[positionM]);
     }
 }
+

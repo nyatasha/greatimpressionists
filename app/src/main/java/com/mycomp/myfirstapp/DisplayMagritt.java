@@ -47,10 +47,10 @@ public class DisplayMagritt extends Activity {
             public void onClick(View v) {
 
                 // Sending image id to FullScreenActivity
-                Intent i = new Intent(getApplicationContext(), FullImageActivity.class);
+                Intent i = new Intent(getApplicationContext(), FullImageActivityMagritt.class);
                 int position = ID_int;
                 // passing array index
-                i.putExtra(EXTRA_ID, position);
+                i.putExtra("Magritt", position);
                 startActivity(i);
             }
         });

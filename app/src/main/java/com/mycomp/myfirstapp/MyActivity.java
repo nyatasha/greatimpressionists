@@ -1,14 +1,17 @@
 package com.mycomp.myfirstapp;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.Menu;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
@@ -24,28 +27,35 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParser;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class MyActivity extends FragmentActivity { //FragmentActivity implements ActionBar.TabListener {
     public final static String EXTRA_MESSAGE = "com.mycomp.myfirstapp.MESSAGE";
     public final static String Biografia = "com.mycomp.myfirstapp.MESSAGE";
     PagerAdapter mPagerAdapter;
     ViewPager mViewPager;
-    GridView gridView;
-
+    //GridView gridView;
+    public static List<String> names = new ArrayList<String>();
+    public static List<Integer> ids = new ArrayList<>();
+    public static ImageAdapter imageAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my);
 
+        names = parseNames();
         final ActionBar actionBar = getActionBar();
 
         actionBar.setDisplayShowHomeEnabled(true);
@@ -125,10 +135,10 @@ public class MyActivity extends FragmentActivity { //FragmentActivity implements
 
     public static class LaunchpadSectionFragment extends Fragment {
         private FragmentActivity fa;
-        @Override
+        GridView gridView;
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
+            setHasOptionsMenu(true);
             View v = inflater.inflate(R.layout.grid_layout, container, false);
             ImageView img_biogr = (ImageView) v.findViewById(R.id.biografia);
             img_biogr.setImageResource(R.drawable.dali_biograf);
@@ -140,50 +150,78 @@ public class MyActivity extends FragmentActivity { //FragmentActivity implements
                 }
             });
 
-            GridView gridView = (GridView) v.findViewById(R.id.grid_view);
+            gridView = (GridView) v.findViewById(R.id.grid_view);
 
             // Instance of ImageAdapter Class
-            gridView.setAdapter(new ImageAdapter(getActivity()));
+            imageAdapter = new ImageAdapter(getActivity());
+            gridView.setAdapter(imageAdapter);
             gridView.setOnItemClickListener(new OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View v,
                                         int position, long id) {
-
+                    //Log.i("poss",String.valueOf(imageAdapter.getListOfIds().get(position)));
+                    //((MyActivity) getActivity()).ShowDali(v, imageAdapter.getListOfIds().get(position));
                     ((MyActivity) getActivity()).ShowDali(v, position);
                 }
             });
             return v;
-            //View rootView = inflater.inflate(R.layout.grid_layout, container, false);
+        }
+        public void onCreateOptionsMenu(Menu menu,MenuInflater inflater) {
+            inflater.inflate(R.menu.menu_my, menu);
+            MenuItem searchItem = menu.findItem(R.id.action_search);
+            SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+            //*** setOnQueryTextFocusChangeListener ***
+            searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
 
-            /* Demonstration of a collection-browsing activity.
-            rootView.findViewById(R.id.demo_collection_button)
-                    .setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            Intent intent = new Intent(getActivity(), CollectionDemoActivity.class);
-                            startActivity(intent);
-                        }
-                    });
+                @Override
+                public void onFocusChange(View v, boolean hasFocus) {
 
-            // Demonstration of navigating to external activities.
-            rootView.findViewById(R.id.demo_external_activity)
-                    .setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            // Create an intent that asks the user to pick a photo, but using
-                            // FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET, ensures that relaunching
-                            // the application from the device home screen does not return
-                            // to the external activity.
-                            Intent externalActivityIntent = new Intent(Intent.ACTION_PICK);
-                            externalActivityIntent.setType("image/*");
-                            externalActivityIntent.addFlags(
-                                    Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-                            startActivity(externalActivityIntent);
-                        }
-                    });*/
+                }
+            });
 
-            //return rootView;
-     }
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String searchQuery) {
+                    imageAdapter.filter(searchQuery, MyActivity.getNames());
+                    //Log.i("myapp",searchQuery);
+                    gridView.invalidate();
+                    return true;
+                }
+            });
+
+            MenuItemCompat.setOnActionExpandListener(searchItem, new MenuItemCompat.OnActionExpandListener() {
+                @Override
+                public boolean onMenuItemActionCollapse(MenuItem item) {
+                    // Do something when collapsed
+                    return true;  // Return true to collapse action view
+                }
+
+                @Override
+                public boolean onMenuItemActionExpand(MenuItem item) {
+                    // Do something when expanded
+                    return true;  // Return true to expand action view
+                }
+            });
+        }
+        public boolean onOptionsItemSelected(MenuItem item) {
+            // Handle action bar item clicks here. The action bar will
+            // automatically handle clicks on the Home/Up button, so long
+            // as you specify a parent activity in AndroidManifest.xml.
+            int id = item.getItemId();
+
+            //noinspection SimplifiableIfStatement
+            if (id == R.id.action_search) {
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
     }
 
     public static class MagrittSectionFragment extends Fragment {
@@ -266,13 +304,12 @@ public class MyActivity extends FragmentActivity { //FragmentActivity implements
         intent.putExtra(Biografia, tmp);
         startActivity(intent);
     }
-    public boolean onCreateOptionsMenu(Menu menu) {
+    /*public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_my, menu);
         super.onCreateOptionsMenu(menu);
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -282,5 +319,43 @@ public class MyActivity extends FragmentActivity { //FragmentActivity implements
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }*/
+    public List<String> parseNames(){
+        String tmp = "";
+        String elemtext = null;
+        try {
+            XmlPullParser parser = getResources().getXml(R.xml.dali);
+
+            while (parser.getEventType() != XmlPullParser.END_DOCUMENT) {
+                if (parser.getEventType() == XmlPullParser.START_TAG) {
+
+                    String elemName = parser.getName();
+                    if (elemName.equals("picture")) {
+                        tmp = parser.getAttributeValue(null,
+                                "id");
+                        //ids.add(Integer.parseInt(tmp));
+                    }
+                    if (elemName.equals("name")) {
+                        elemtext = "name";
+                    }
+                    if (elemName.equals("description")) {
+                        elemtext = "description";
+                    }
+                } else if (parser.getEventType() == XmlPullParser.TEXT) {
+                        if (elemtext.equals("name")) {
+                            names.add(parser.getText());
+                            Log.i("myapp", parser.getText());
+                        }
+                 }
+                parser.next();
+
+            }
+        } catch (Throwable e) {
+            Toast.makeText(this, "Ошибка при загрузке XML-документа: " + e.toString(), 4000).show();
+        }
+        return names;
+    }
+    public static List<String> getNames(){
+        return names;
     }
 }

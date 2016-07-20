@@ -3,12 +3,16 @@ package com.mycomp.myfirstapp;
 import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ListActivity;
+import android.app.SearchManager;
+import android.app.SearchableInfo;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import org.xmlpull.v1.XmlPullParser;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class DisplayDali extends Activity {
@@ -52,7 +57,7 @@ public class DisplayDali extends Activity {
                 Intent i = new Intent(getApplicationContext(), FullImageActivity.class);
                 int position = ID_int;
                 // passing array index
-                i.putExtra(EXTRA_ID, position);
+                i.putExtra("Dali", position);
                 startActivity(i);
             }
         });
@@ -85,6 +90,7 @@ public class DisplayDali extends Activity {
                         if (elemtext.equals("name")) {
                             title.setText(parser.getText());
                             list.add(parser.getText());
+                            Log.i("myapp", parser.getText());
                         } else if (elemtext.equals("description")) {
                             ttt.setText(parser.getText());
                         }

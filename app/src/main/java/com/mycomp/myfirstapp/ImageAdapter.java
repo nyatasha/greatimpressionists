@@ -3,6 +3,7 @@ package com.mycomp.myfirstapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,15 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.xmlpull.v1.XmlPullParser;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
@@ -58,13 +68,18 @@ public class ImageAdapter extends BaseAdapter {
             R.drawable.podglyadyvayushhij,
             R.drawable.myagkaya_kompoziciya,
             R.drawable.raspyatie
-    };
-
+};
+    MyActivity myact = new MyActivity();
+    //ArrayList<String> listOfNames = new ArrayList<String>();
+    List<Integer> mThumbIdsSearch = new ArrayList<Integer>(Arrays.asList(mThumbIds));
+    List<Integer> listOfIds = new ArrayList<Integer>();
+    LayoutInflater mInflater;
     // Constructor
     public ImageAdapter(Context c){
         mContext = c;
+        mInflater = (LayoutInflater)
+                c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
-
     @Override
     public int getCount() {
         return mThumbIds.length;
@@ -83,9 +98,48 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView = new ImageView(mContext);
-        imageView.setImageResource(mThumbIds[position]);
+        //Log.i("myapp", String.valueOf(position));
+        //Log.i("myapp", String.valueOf(mThumbIdsSearch.size()));
+        if(position < mThumbIdsSearch.size()) {
+            imageView.setImageResource(mThumbIdsSearch.get(position)); //mThumbIds[position]);//mThumbIdsSearch.get(position));
+        }
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         imageView.setLayoutParams(new GridView.LayoutParams(210, 210));
         return imageView;
     }
+    public void fillListOfIds(){
+        for (int i = 0; i < mThumbIds.length; i++) {
+            listOfIds.add(i);
+        }
+    }
+    public List<Integer> getListOfIds(){
+        return listOfIds;
+    }
+    public void filter(String charText, List<String> listOfNames) {
+
+        charText = charText.toLowerCase(Locale.getDefault());
+
+        List<Integer> searchList = new ArrayList<Integer>(Arrays.asList(mThumbIds));
+
+        if (charText.length() == 0) {
+            //mThumbIdsSearch = Arrays.asList(mThumbIds);
+            mThumbIdsSearch = new ArrayList<>(searchList);
+            fillListOfIds();
+        } else {
+            searchList.clear();
+            //Log.i("myapp", charText);
+            for (int i = 0; i < mThumbIds.length && i < listOfNames.size(); i++) {
+                //Log.i("myapp", listOfNames.get(i));
+                if (charText.length() != 0 && listOfNames.get(i).toLowerCase(Locale.getDefault()).contains(charText)) {
+                    Log.i("myapp", listOfNames.get(i));
+                    Log.i("myapp", charText);
+                    //mThumbIdsSearch.add(mThumbIds[i]);
+                    searchList.add(mThumbIds[i]);
+                    //listOfIds.add(i);
+                }
+            }
+            mThumbIdsSearch = new ArrayList<>(searchList);
+        }
+        notifyDataSetChanged();
+        }
 }
